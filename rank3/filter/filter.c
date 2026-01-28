@@ -6,13 +6,13 @@
 /*   By: zcadinot <zcadinot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 17:53:05 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/01/21 19:09:08 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/01/28 11:29:23 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 #define BUFFER_SIZE 42
@@ -20,57 +20,51 @@
 int	main(int argc, char **argv)
 {
 	char	buffer[BUFFER_SIZE];
-	char	*content;
-	char	*tmp;
-	char	*match;
-	int		total;
-	int		bytes;
-	int		len;
-	int		i;
-
-	if (argc != 2 || argv[1][0] == '\0')
+	char	*str = NULL;
+	char	*filter;
+	size_t	byte;
+	size_t	i = 0;
+	size_t	j = 0;
+	size_t	k = 0;
+	size_t	total = 0;
+	
+	if (argc != 2 || !argv[1] || !argv[1][0])
 		return (1);
-
-	content = NULL;
-	total = 0;
-	while ((bytes = read(0, buffer, BUFFER_SIZE)) > 0)
+	while ((byte = read(0, buffer, BUFFER_SIZE)) > 0)
 	{
-		tmp = realloc(content, total + bytes);
-		if (!tmp)
-		{
-			free(content);
-			perror("Error");
-			return (1);
-		}
-		content = tmp;
-		memmove(content + total, buffer, bytes);
-		total += bytes;
+		str = realloc(str,total + byte + 1);
+		memmove(str + total, buffer, byte);
+		total += byte;
 	}
-	if (bytes < 0)
-	{
-		free(content);
-		perror("Error");
-		return (1);
-	}
-	if (!content)
+	if (!str)
 		return (0);
-
-	len = strlen(argv[1]);
-	i = 0;
-	while (i < total)
+	str[total] = '\0';
+	// printf("%s", str);
+	filter = argv[1];
+	while (str[i])
 	{
-		match = memmem(content + i, total - i, argv[1], len);
-		if (!match)
+		j = 0;
+		k = i;
+		while (str[k] == filter[j])
 		{
-			write(1, content + i, total - i);
-			break;
+			j++;
+			k++;
 		}
-		write(1, content + i, match - (content + i));
-		while (len--)
-			write(1, "*", 1);
-		len = strlen(argv[1]);
-		i = match - content + len;
+		if (j == strlen(filter))
+		{
+			j = 0;
+			while (j < strlen(filter))
+			{
+				write(1, "*", 1);
+				j++;
+			}
+			i += strlen(filter);
+		}
+		else
+		{
+				write(1, &str[i], 1);
+			i++;
+		}
 	}
-	free(content);
 	return (0);
 }
