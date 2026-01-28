@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   n_queens.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zcadinot <zcadinot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/22 17:23:19 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/01/22 19:19:09 by zcadinot         ###   ########.fr       */
+/*   Created: 2026/01/23 10:21:31 by zcadinot          #+#    #+#             */
+/*   Updated: 2026/01/28 11:37:25 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 int	check_argv(char **argv)
 {
@@ -28,18 +28,16 @@ int	check_argv(char **argv)
 void	print_solution(int *pos, int n)
 {
 	int	i;
-	char	c;
 
 	i = 0;
 	while (i < n)
 	{
-		c = pos[i] + '0';
-		write(1, &c, 1);
+		fprintf(stdout, "%d", pos[i]);
 		if (i + 1 < n)
-			write(1, " ", 1);
+			fprintf(stdout, " ");
 		i++;
 	}
-	write(1, "\n", 1);
+	fprintf(stdout, "\n");
 }
 
 int	check_argc(int argc)
@@ -52,7 +50,7 @@ int	check_argc(int argc)
 
 int	is_safe(int *pos, int col)
 {
-	int	i;
+	int i;
 
 	i = 0;
 	while (i < col)
@@ -61,19 +59,18 @@ int	is_safe(int *pos, int col)
 		{
 			return (0);
 		}
-		if ((pos[i] - pos[col] == col - i) || (pos[col] - pos[i] == col - i))
+		if (abs(pos[i] - pos[col]) == col - i)
 		{
-			return (0);		
+			return(0);
 		}
 		i++;
 	}
 	return (1);
 }
 
-void	solve(int *pos, int col, int n)
+void solve(int *pos, int col, int n)
 {
-	int	row;
-
+	int row;
 	if (col == n)
 	{
 		print_solution(pos, n);
