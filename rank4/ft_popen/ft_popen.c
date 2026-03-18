@@ -5,8 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/18 15:22:04 by zcadinot          #+#    #+#             */
+/*   Updated: 2026/03/18 15:40:24 by zcadinot         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_popen.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 13:23:06 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/03/18 14:07:04 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/03/18 14:44:58 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +30,13 @@ int ft_popen(const char *file, char *const argv[], char type)
 {
     if (!argv || !file || (type != 'r' && type != 'w'))
     {
-        printf("Error:\n");
         return (-1);
     }
     int pipefd[2];
-    char buf[100];
     pid_t pid;
 
-    pipe(pipefd);
-
-    /* write(pipefd[1], "s", 1); */
-    /* read(pipefd[0], buf,1); */
-    /* printf("%s", buf); */
+    if (pipe(pipefd) == -1)
+        return (-1);
 
     pid = fork();
     if (pid == -1)
@@ -40,11 +47,27 @@ int ft_popen(const char *file, char *const argv[], char type)
     {
         if (type == 'r')
         {
-            dup2(pipefd[1], 1);
+            if (dup2(pipefd[1], 1) == -1)
+                exit(-1);
             close(pipefd[0]);
             close(pipefd[1]);
             execvp(file, argv);
-            return (pipefd[0]);
+            exit(1);
+        }
+        if (type == 'w')
+        {
+            if (dup2(pipefd[0], 0) == -1)
+                exit(-1);
+            close(pipefd[1]);
+            close(pipefd[0]);
+            execvp(file, argv);
+            exit(1);
+        }
+        else
+        {
+            close(pipefd[1]);
+            close(pipefd[0]);
+            exit(-1);
         }
     }
     else
@@ -55,15 +78,7 @@ int ft_popen(const char *file, char *const argv[], char type)
             return (pipefd[0]);
         }
     }
-    return (0);
+    close(pipefd[0]);
+    return (pipefd[1]);
 }
 
-int main(int argc, char **argv)
-{
-    char buf[100];
-    int fd;
-    fd = ft_popen("ls", (char *const []){"ls", "-LR", NULL}, 'r');
-    read(fd, buf, 100);
-    printf("%s", buf);
-    return (0);
-}
