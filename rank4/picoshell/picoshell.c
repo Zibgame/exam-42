@@ -6,71 +6,87 @@
 /*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 16:13:14 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/03/25 13:29:44 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/03/25 14:06:55 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include <stdlib.h>
 #include <sys/wait.h>
-
 #include <stdlib.h>
-#include <unistd.h>
 
-
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-
-static void	exec_cmd(char **cmd, int in, int out)
+int exec_cmd(char **cmd, int in, int out)
 {
 	if (in != -1)
 	{
-		dup2(in, 0);
+		if (dup2(in, 0) == -1)
+		{
+			exit(1);
+		}
 		close(in);
 	}
 	if (out != -1)
 	{
-		dup2(out, 1);
-		close(out);
+		if (dup2(out, 1) == -1)
+		{
+			exit(1);
+		}
+		close (out);
 	}
 	execvp(cmd[0], cmd);
 	exit(1);
 }
 
+int closer(int last, int *fd,int in_pipe)
+{
+    if (last != -1)
+    {
+        close(last);
+    }
+    if (in_pipe)
+    {
+        close(fd[1]);
+        close(fd[0]);
+    }
+    return (1);
+}
+
 int	picoshell(char **cmds[])
 {
-	int		i;
+	int		i = 0;
 	int		fd[2];
-	int		last;
-	pid_t	pid;
+	int		last = -1;
+	pid_t	pid = -1;
 
-	i = 0;
-	last = -1;
-	while (cmds[i])
-	{
-		if (cmds[i + 1])
-			pipe(fd);
-		pid = fork();
-		if (pid == 0)
-		{
-			if (cmds[i + 1])
+    while (cmds[i])
+    {
+        if (cmds[i + 1] && pipe(fd) == -1)
+        {
+            closer(last, fd, 0);
+        }
+        pid = fork();
+        if (pid == -1)
+            return(closer(last, fd, cmds[i + 1] != NULL));
+
+        if (pid == 0)
+        {
+            if (cmds[i + 1])
+            {
 				exec_cmd(cmds[i], last, fd[1]);
+            }
 			else
 				exec_cmd(cmds[i], last, -1);
-		}
-		if (last != -1)
-			close(last);
-		if (cmds[i + 1])
-		{
-			close(fd[1]);
-			last = fd[0];
-		}
-		i++;
-	}
-	while (wait(NULL) > 0)
-		;
-	return (0);
+        }
+        closer(last, fd, 0);
+        if (cmds[i + 1])
+        {
+            close(fd[1]);
+            last = fd[0];
+        }
+        i++;
+    }
+    while (wait(NULL) > 0)
+        ;
+    return (0);
 }
 
 static int	count_cmds(int ac, char **av)
