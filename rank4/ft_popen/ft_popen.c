@@ -6,7 +6,7 @@
 /*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 15:50:53 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/03/25 11:33:46 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/03/25 11:35:53 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,23 +37,18 @@ int ft_popen(const char *file, char *const argv[], char type)
         if (type == 'r')
         {
             if (dup2(pipefd[1], 1) == -1)
-                exit(-1);
+                exit(1);
         }
         else if (type == 'w')
         {
             if (dup2(pipefd[0], 0) == -1)
-                exit(-1);
-        }
-        else
-        {
-            close(pipefd[1]);
-            close(pipefd[0]);
-            exit(-1);
+                exit(1);
         }
         close(pipefd[1]);
         close(pipefd[0]);
         execvp(file, argv);
-        exit(0);
+        exit(1);
+
     }
     else
     {
