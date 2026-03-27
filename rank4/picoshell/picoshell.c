@@ -29,7 +29,7 @@ int exec_cmd(char **cmd, int in , int out)
 		close(out);
 	}
 	execvp(cmd[0], cmd);
-	return (1);
+	exit(1);
 }
 
 int closer(int last, int *fd, int in_pipe)
