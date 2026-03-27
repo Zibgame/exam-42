@@ -24,7 +24,7 @@ int exec_cmd(char **cmd, int in , int out)
 	}
 	if (out != -1)
 	{
-		if (dup2(out, 0) == -1)
+		if (dup2(out, 1) == -1)
 			exit(1);
 		close(out);
 	}
@@ -65,9 +65,9 @@ int	picoshell(char **cmds[])
 		if (pid == 0)
 		{
 			if (cmds[i + 1])
-				exec_cmd(cmds[0], last, fd[1]);
+				exec_cmd(cmds[i], last, fd[1]);
 			else
-				exec_cmd(cmds[0], last, -1);
+				exec_cmd(cmds[i], last, -1);
 		}
 		closer(last, fd, 0);	
 		if (cmds[i + 1])
