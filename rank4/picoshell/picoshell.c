@@ -6,7 +6,7 @@
 /*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 16:13:14 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/03/26 13:34:23 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/03/27 16:16:02 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,58 +16,38 @@
 
 int exec_cmd(char **cmd, int in , int out)
 {
-	if (!cmd || !cmd[0])
-		exit(1);
 	if (in != -1)
 	{
 		if (dup2(in, 0) == -1)
-			exit(1);
+			exit(0);
 		close(in);
 	}
 	if (out != -1)
 	{
 		if (dup2(out, 1) == -1)
-			exit(1);
+			exit(0);
 		close(out);
 	}
 	execvp(cmd[0], cmd);
-	exit(1);
-}
-
-int closer(int last, int *fd, int in_pipe)
-{
-	if (last != -1)
-	{
-		close(last);
-	}
-	if (in_pipe)
-	{
-		if (fd[0] != -1)
-			close(fd[0]);
-		if (fd[1] != -1)
-			close(fd[1]);
-	}
-	return (0);
+	exit(0);
 }
 
 int	picoshell(char **cmds[])
 {
-	int i = 0;
-	int last = -1;
-	int fd[2];
-	pid_t pid = -1;
+	int		i;
+	int		last;
+	int		fd[2];
+	pid_t	pid;
 
+	i = 0;
+	last = -1;
 	while (cmds[i])
 	{
-		fd[0] = -1;
-		fd[1] = -1;
 		if (cmds[i + 1] && pipe(fd) == -1)
-			return(closer(last, fd, 0));
-
+			return (1);
 		pid = fork();
 		if (pid == -1)
-			return (closer(last, fd, cmds[i + 1] != NULL));
-		
+			return (1);
 		if (pid == 0)
 		{
 			if (cmds[i + 1])
@@ -75,9 +55,13 @@ int	picoshell(char **cmds[])
 			else
 				exec_cmd(cmds[i], last, -1);
 		}
-	closer(last, fd, cmds[i + 1] != NULL);
-	if (cmds[i + 1])
-		last = fd[0];
+		if (last != -1)
+			close(last);
+		if (cmds[i + 1])
+		{
+			close(fd[1]);
+			last = fd[0];
+		}
 		i++;
 	}
 	while (wait(NULL) > 0)
