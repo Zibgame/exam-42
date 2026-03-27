@@ -40,8 +40,10 @@ int closer(int last, int *fd, int in_pipe)
 	}
 	if (in_pipe)
 	{
-		close(fd[0]);
-		close(fd[1]);
+		if (fd[0] != -1)
+			close(fd[0]);
+		if (fd[1] != -1)
+			close(fd[1]);
 	}
 	return (0);
 }
@@ -55,6 +57,8 @@ int	picoshell(char **cmds[])
 
 	while (cmds[i])
 	{
+		fd[0] = -1;
+		fd[1] = -1;
 		if (cmds[i + 1] && pipe(fd) == -1)
 			return(closer(last, fd, 0));
 
@@ -69,12 +73,9 @@ int	picoshell(char **cmds[])
 			else
 				exec_cmd(cmds[i], last, -1);
 		}
-		closer(last, fd, 0);	
-		if (cmds[i + 1])
-		{
-			close(fd[1]);
-			last = fd[0];
-		}
+	closer(last, fd, cmds[i + 1] != NULL);
+	if (cmds[i + 1])
+		last = fd[0];
 		i++;
 	}
 	while (wait(NULL) > 0)
