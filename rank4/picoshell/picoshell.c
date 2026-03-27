@@ -16,6 +16,8 @@
 
 int exec_cmd(char **cmd, int in , int out)
 {
+	if (!cmd || !cmd[0])
+		exit(1);
 	if (in != -1)
 	{
 		if (dup2(in, 0) == -1)
