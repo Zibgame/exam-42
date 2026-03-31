@@ -6,7 +6,7 @@
 /*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 16:13:14 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/03/27 16:16:02 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/03/30 13:17:38 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
-int exec_cmd(char **cmd, int in , int out)
+int exec_cmd(char **cmd, int in, int out)
 {
 	if (in != -1)
 	{
-		if (dup2(in, 0) == -1)
+		if (dup2(in,0) == -1)
 			exit(0);
 		close(in);
 	}
 	if (out != -1)
 	{
-		if (dup2(out, 1) == -1)
+		if (dup2(out,1) == -1)
 			exit(0);
 		close(out);
 	}
@@ -34,17 +34,15 @@ int exec_cmd(char **cmd, int in , int out)
 
 int	picoshell(char **cmds[])
 {
-	int		i;
-	int		last;
-	int		fd[2];
-	pid_t	pid;
+	int fd[2];
+	int last = -1;
+	int i = 0;
+	pid_t pid = -1;
 
-	i = 0;
-	last = -1;
-	while (cmds[i])
+	while(cmds[i])
 	{
 		if (cmds[i + 1] && pipe(fd) == -1)
-			return (1);
+			return(1);
 		pid = fork();
 		if (pid == -1)
 			return (1);
@@ -64,7 +62,7 @@ int	picoshell(char **cmds[])
 		}
 		i++;
 	}
-	while (wait(NULL) > 0)
+	while(wait(NULL) > 0)
 		;
 	return (0);
 }
