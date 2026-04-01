@@ -29,7 +29,7 @@ int exec_cmd(char **cmd, int in, int out)
 		close(out);
 	}
 	execvp(cmd[0], cmd);
-	exit(0);
+	exit(1);
 }
 
 int	picoshell(char **cmds[])
