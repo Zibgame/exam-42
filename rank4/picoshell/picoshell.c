@@ -19,13 +19,13 @@ int exec_cmd(char **cmd, int in, int out)
 	if (in != -1)
 	{
 		if (dup2(in,0) == -1)
-			exit(0);
+			exit(1);
 		close(in);
 	}
 	if (out != -1)
 	{
 		if (dup2(out,1) == -1)
-			exit(0);
+			exit(1);
 		close(out);
 	}
 	execvp(cmd[0], cmd);
