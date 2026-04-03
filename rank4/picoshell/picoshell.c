@@ -49,7 +49,10 @@ int	picoshell(char **cmds[])
 		if (pid == 0)
 		{
 			if (cmds[i + 1])
+			{
+				close(fd[0]);
 				exec_cmd(cmds[i], last, fd[1]);
+			}
 			else
 				exec_cmd(cmds[i], last, -1);
 		}
