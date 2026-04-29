@@ -6,7 +6,7 @@
 /*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 13:09:02 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/04/28 17:02:45 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/04/29 14:32:45 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #pragma once 
@@ -31,12 +31,31 @@ class bigint
 		bigint operator<<(const unsigned int n) const;
 		bigint operator<<(const bigint &other) const;
 		bigint operator>>(const unsigned int n) const;
+		bigint operator>>(const bigint &other) const;
 
 		bigint &operator<<=(const unsigned int n);
 		bigint &operator<<=(const bigint &other);
 		bigint &operator>>=(const unsigned int n);
 		bigint &operator>>=(const bigint &other);
+
+		bool operator<(const unsigned int n);	
+		bool operator<(const bigint &other);
+
+		bool operator>(const unsigned int n);	
+		bool operator>(const bigint &other);
+
+		bool operator==(const unsigned int n);
+		bool operator==(const bigint &other);
+
+		bool operator!=(const unsigned int n);
+		bool operator!=(const bigint &other);
 	
+		bool operator<=(const unsigned int n);
+		bool operator<=(const bigint &other);
+
+		bool operator>=(const unsigned int n);
+		bool operator>=(const bigint &other);
+
 		std::string get_value() const;
 		friend std::ostream &operator<<(std::ostream &out, const bigint &n);
 

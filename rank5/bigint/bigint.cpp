@@ -6,7 +6,7 @@
 /*   By: zcadinot <zcadinot@student.42lehavre.      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 13:06:50 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/04/28 17:02:04 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/04/29 14:32:36 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,26 @@ bigint::bigint ()
 	this->_value = "0";
 }
 
-bigint::bigint(const unsigned int n)
+bigint::bigint(unsigned int num)
 {
-	this->_value = std::to_string(n);
+	std::stringstream ss;
+	ss << num;
+	this->_value = ss.str();
+	// std::cout << "str: " << str << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &out, const bigint &n)
 {
 	out << n._value;
 	return (out);
+}
+
+unsigned int stringToUINT(std::string str)
+{
+	std::stringstream ss(str);
+	unsigned int res;
+	ss >> res;
+	return (res);
 }
 
 bigint::bigint(const bigint &other)
@@ -98,17 +109,9 @@ bigint bigint::operator++(int)
 
 bigint bigint::operator<<(const unsigned int n) const
 {
-	bigint temp = *this;
-	temp._value.insert(temp._value.end(), n, '0');
+	bigint temp(*this);
+	temp._value.append(n, '0');
 	return (temp);
-}
-
-unsigned int stringToUINT(std::string str)
-{
-	std::stringstream ss(str);
-	unsigned int res;
-	ss >> res;
-	return (res);
 }
 
 bigint bigint::operator<<(const bigint& other)const
@@ -118,10 +121,16 @@ bigint bigint::operator<<(const bigint& other)const
 	return(temp);
 }
 
-bigint& bigint::operator<<=(const bigint& other)
+bigint &bigint::operator<<=(const unsigned int n)
 {
-	(*this) = (*this) << stringToUINT(other._value);
-	return(*this);
+	*this = *this << n;
+	return (*this);
+}
+
+bigint &bigint::operator<<=(const bigint& other)
+{
+	*this = *this << stringToUINT(other._value);
+	return (*this);
 }
 
 bigint bigint::operator>>(const unsigned int n) const
@@ -129,18 +138,10 @@ bigint bigint::operator>>(const unsigned int n) const
 	bigint temp(*this);
 
 	if (n >= temp._value.length())
-	{
 		temp._value = "0";
-		return (temp);
-	}
-	temp._value.erase(temp._value.length() - n, n);
+	else
+		temp._value.erase(temp._value.length() - n, n);
 	return (temp);
-}
-
-bigint &bigint::operator>>=(const unsigned int n)
-{
-	*this = *this >> n;
-	return (*this);
 }
 
 bigint &bigint::operator>>=(const bigint &other)
@@ -148,6 +149,76 @@ bigint &bigint::operator>>=(const bigint &other)
 	*this = *this >> stringToUINT(other._value);
 	return (*this);
 }
+
+bigint bigint::operator>>(const bigint &other) const
+{
+	bigint temp;
+	temp = *this >> stringToUINT(other._value);
+	return (temp);
+}
+
+bool bigint::operator<(const unsigned int n)
+{
+	return ((stringToUINT(this->_value) < n));	
+}
+
+
+bool bigint::operator<(const bigint &other)
+{
+	return ((stringToUINT(this->_value) < stringToUINT(other._value)));	
+}
+
+bool bigint::operator>(const unsigned int n)
+{
+	return ((stringToUINT(this->_value) > n));	
+}
+
+bool bigint::operator>(const bigint &other)
+{
+	return ((stringToUINT(this->_value) > stringToUINT(other._value)));	
+}
+
+bool bigint::operator==(const unsigned int n)
+{
+	return ((stringToUINT(this->_value) == n));
+}
+
+bool bigint::operator==(const bigint &other)
+{
+	return ((stringToUINT(this->_value) == stringToUINT(other._value)));
+}
+
+bool bigint::operator!=(const unsigned int n)
+{
+	return((stringToUINT(this->_value) != n));
+}
+
+bool bigint::operator!=(const bigint &other)
+{
+	return((stringToUINT(this->_value) != stringToUINT(other._value)));
+}
+
+bool bigint::operator<=(const unsigned int n)
+{
+	return ((stringToUINT(this->_value) <= n));
+}
+
+bool bigint::operator<=(const bigint &other)
+{
+	return ((stringToUINT(this->_value) <= stringToUINT(other._value)));
+}
+
+bool bigint::operator>=(const unsigned int n)
+{
+	return ((stringToUINT(this->_value) >= n));
+}
+
+bool bigint::operator>=(const bigint &other)
+{
+	return ((stringToUINT(this->_value) >= stringToUINT(other._value)));
+}
+
+
 
 std::string bigint::get_value() const
 {
