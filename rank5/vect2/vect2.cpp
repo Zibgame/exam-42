@@ -132,7 +132,7 @@ vect2 vect2::operator*(const int i) const
 vect2 vect2::operator*=(const int i)
 {
 	this->_x *= i;
-	this->_x *= i;
+	this->_y *= i;
 	return (*this);
 }
 
