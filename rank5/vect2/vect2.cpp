@@ -86,7 +86,7 @@ vect2 vect2::operator++(int)
 
 vect2 vect2::operator-(const vect2 &other)
 {
-	return (vect2(this->_x - other._x, this->_x - other._x));
+	return (vect2(this->_x - other._x, this->_y - other._y));
 }
 
 vect2 vect2::operator-()
