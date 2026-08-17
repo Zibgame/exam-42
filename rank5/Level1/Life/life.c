@@ -6,7 +6,7 @@
 /*   By: exam <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/05 14:31:27 by exam              #+#    #+#             */
-/*   Updated: 2026/08/05 14:31:29 by exam             ###   ########.fr       */
+/*   Updated: 2026/08/16 23:10:30 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,13 @@ char **init_map(int width, int height)
     int h = 0;
     int w = 0;
     char **map = malloc(sizeof(char *) * height);
+    if (!map)
+        return (NULL);
     while (h < height)
     {
         map[h] = malloc(sizeof(char) * width);
+        if (!map[h])
+            return (NULL);
         w = 0;
         while (w < width)
         {
@@ -33,14 +37,15 @@ char **init_map(int width, int height)
 
 char *get_stdin()
 {
-    char *buf = malloc(sizeof(char) * 100 + 10);
-    size_t nb_read = 100;
+    size_t nb_read = 100000;
+    char *buf = malloc(sizeof(char) * nb_read + 1);
+    if (!buf)
+        return (NULL);
     int byte = 0;
     int total_byte = 0;
     while ((byte = read(STDIN_FILENO, buf, nb_read)) > 0)
     {
         total_byte += byte;
-    
     }
     buf[total_byte - 1] = '\0';
     return (buf);
@@ -108,175 +113,98 @@ void print_map(char **map, int width, int height)
     return ;
 }
 
-int check_rule(char **map, int x, int y, int width, int height)
+int	check_rule(char **map, int x, int y, int width, int height)
 {
-    //map[y][x] = 'X';
-    int voisin = 0;
-    int life = 0;
-    //
-    // UOO
-    // OXO
-    // OOO
-    //
-    if ((x - 1 >=0 && x - 1 < height) && (y - 1 >=0 && y - 1 < width))
-    {
-        if (map[y - 1][x - 1] == 'O')
-        {
-            //map[y - 1][x - 1] = 'U';
-            voisin++;
-        }
-    }
-    //
-    // OUO
-    // OXO
-    // OOO
-    //
-    if ((x >= 0 && x < height) && (y - 1 >=0 && x - y < width))
-    {
-        if (map[y - 1][x] == 'O')
-        {
-            //map[y - 1][x] = 'U';
-            voisin++;
-        }
-    }
-    //
-    // OOU
-    // OXO
-    // OOO
-    //
-    if ((x + 1 >= 0 && x + 1 < height) && (y - 1 >=0 && x - y < width))
-    {
-        if (map[y - 1][x + 1] == 'O')
-        {
-            //map[y - 1][x + 1] = 'U';
-            voisin++;
-        }
-    }
+	int	voisin;
 
-    //
-    // OOO
-    // UXO
-    // OOO
-    //
-    if ((x - 1 >=0 && x - 1 < height) && (y  >= 0 && y  < width))
-    {
-        if (map[y ][x - 1] == 'O')
-        {
-            //map[y ][x - 1] = 'U';
-            voisin++;
-        }
-    }
-
-    //
-    // OOO
-    // UXO
-    // OOO
-    //
-    if ((x + 1 >=0 && x + 1 < height) && (y  >= 0 && y  < width))
-    {
-        if (map[y ][x + 1] == 'O')
-        {
-            //map[y ][x + 1] = 'U';
-            voisin++;
-        }
-    }
-
-    //
-    // 0OO
-    // OXO
-    // OOU
-    //
-    if ((x - 1 >=0 && x - 1 < height) && (y + 1 >=0 && y + 1 < width))
-    {
-        if (map[y + 1][x - 1] == 'O')
-        {
-            //map[y + 1][x - 1] = 'U';
-            voisin++;
-        }
-    }
-
-    //
-    // 0OO
-    // OXO
-    // OOU
-    //
-    if ((x >=0 && x < height) && (y + 1 >=0 && y + 1 < width))
-    {
-        if (map[y + 1][x] == 'O')
-        {
-            //map[y + 1][x] = 'U';
-            voisin++;
-        }
-    }
-
-    //
-    // 0OO
-    // OXO
-    // OOU
-    //
-    if ((x + 1 >=0 && x + 1 < height) && (y + 1 >=0 && y + 1 < width))
-    {
-        if (map[y + 1][x + 1] == 'O')
-        {
-            //map[y + 1][x + 1] = 'U';
-            voisin++;
-        }
-    }
-    
-    //printf("\n");
-    //print_map(map, width, height);
-
-    if (map[y][x] == ' ' && voisin == 3)
-    {
-        life = 1;
-    }
-    else if ((voisin == 2 || voisin == 3) && map[y][x] == 'O')
-        life = 1;
-    else if (voisin < 2)
-        life = 0;
-    else if (voisin > 3)
-        life = 0;
-    printf("\n%d\n", voisin);
-    return life;
+	voisin = 0;
+	if (x > 0 && y > 0 && map[y - 1][x - 1] == 'O')
+		voisin++;
+	if (y > 0 && map[y - 1][x] == 'O')
+		voisin++;
+	if (x + 1 < width && y > 0 && map[y - 1][x + 1] == 'O')
+		voisin++;
+	if (x > 0 && map[y][x - 1] == 'O')
+		voisin++;
+	if (x + 1 < width && map[y][x + 1] == 'O')
+		voisin++;
+	if (x > 0 && y + 1 < height && map[y + 1][x - 1] == 'O')
+		voisin++;
+	if (y + 1 < height && map[y + 1][x] == 'O')
+		voisin++;
+	if (x + 1 < width && y + 1 < height
+		&& map[y + 1][x + 1] == 'O')
+		voisin++;
+	if (map[y][x] == 'O' && (voisin == 2 || voisin == 3))
+		return (1);
+	if (map[y][x] == ' ' && voisin == 3)
+		return (1);
+	return (0);
 }
 
-void make_iteration(char **map, int iterations, int width, int height)
+char **copy_map(char **map, int width, int height)
+{
+    char **copy = init_map(width, height);
+    int x = 0;
+    int y = 0;
+    while (y < height)
+    {
+        x = 0;
+        while (x < width)
+        {      
+            copy[y][x] = map[y][x];
+            x++;
+        }
+        y++;
+    }
+    return (copy);
+}
+
+static void	freemap(char **map, int height)
+{
+	int	h;
+
+	h = 0;
+	while (h < height)
+	{
+		free(map[h]);
+		h++;
+	}
+	free(map);
+}
+
+char **make_iteration(char **map, int iterations, int width, int height)
 {
     int i = 0;
     int h = 0;
     int w = 0;
-    char **n_map = init_map(width, height);
-    n_map = map;
+    char **tmp;
+    char **n_map = copy_map(map, width, height);
     while (i < iterations)
     {
+        h = 0;
         while (h < height)
         {
             w = 0;
             while (w < width)
             {
-                if (check_rule(map, w, h, width, height) == 1)
-                {
-                    if ((w >= 0 && w < width - 1) && (h >= 0 && h < height - 1))
-                    {
-                        n_map[h][w] = 'O';
-                    }
-                }
-                else if (check_rule(map, w, h, width, height) == 0)
-                {
-                    if ((w >= 0 && w < width - 1) && (h >= 0 && h < height - 1))
-                    {
-                        n_map[h][w] = ' ';
-                    }
-                }
+				if (check_rule(map, w, h, width, height))
+					n_map[h][w] = 'O';
+				else
+					n_map[h][w] = ' ';
                 w++;
             }
             h++;
         }
+        tmp = map;
+        map = n_map;
+        n_map = tmp;
         i++;
     }
-    printf("\n");
-    print_map(n_map, width, height);
-    return ;
+    //printf("\n");
+    print_map(map, width, height);
+    freemap(n_map, height);
+    return map;
 }
 
 int main(int argc, char **argv)
@@ -290,10 +218,12 @@ int main(int argc, char **argv)
     iterations = atoi(argv[3]);
     char *stdin = get_stdin();
 
-    printf(" width = %d\n height = %d\n iterations = %d\n stdins = %s\n", width, height, iterations, stdin);
+    /* printf(" width = %d\n height = %d\n iterations = %d\n stdins = %s\n\n", width, height, iterations, stdin); */
     char **map = init_map(width, height);
     map = paint_map(map, stdin, width, height);
-    print_map(map, width, height);
-    make_iteration(map, iterations, width, height);
+    /* print_map(map, width, height); */
+    map = make_iteration(map, iterations, width, height);
+    freemap(map, height);
+    free(stdin);
     return (0);
 }
