@@ -1,0 +1,57 @@
+Assignment name  : life
+Expected files   : *.c *.h
+Allowed functions: atoi, read, putchar, malloc, calloc, realloc, free
+--------------------------------------------------------------------------------
+
+Vous devez écrire un programme qui simule un jeu de la vie.  
+Le prototype de ce programme est le suivant :  
+./life width height iterations
+
+Largeur et hauteur sont les dimensions du plateau et itérations est le nombre
+d’itérations du jeu de la vie.
+
+La configuration initiale du plateau est dessinée à l’aide d’une séquence de
+commandes sur l’entrée standard.
+
+Imaginez un stylo qui commence dans le coin supérieur gauche du plateau.  
+Chaque commande est l’un des caractères suivants :  
+'w', 'a', 's', 'd' : déplacent le stylo vers le haut, la gauche, le bas et la droite.  
+'x' : lève ou abaisse le stylo afin de commencer ou d’arrêter de dessiner. Par défaut:
+le stylo ne dessine pas.
+
+Votre stylo ne sort pas du plateau et reste immobile si une commande lui demande de le faire.  
+Le stylo ne fait rien en cas de commande invalide.
+
+Une fois la fin du fichier atteinte, votre programme doit simuler un jeu de la
+vie sur ce plateau et afficher le résultat sur la sortie standard
+(chaque cellule vivante est représentée par le caractère 'O' et chaque cellule morte par un espace).
+
+Chaque cellule en dehors du tableau est considérée comme morte.
+
+Example:
+$> echo 'sdxddssaaww' | ./life 5 5 0 | cat -e
+     $
+ OOO $
+ O O $
+ OOO $
+     $
+$> echo 'sdxssdswdxddddsxaadwxwdxwaa' | ./life 10 6 0 | cat -e
+          $
+ O   OOO  $
+ O     O  $
+ OOO  O   $
+  O  OOO  $
+          $
+$> echo 'dxss' | ./life 3 3 0 | cat -e
+ O $
+ O $
+ O $
+$> echo 'dxss' | ./life 3 3 1 | cat -e
+   $
+OOO$
+   $
+$> echo 'dxss' | ./life 3 3 2 | cat -e
+ O $
+ O $
+ O $
+$>

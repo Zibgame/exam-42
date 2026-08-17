@@ -1,0 +1,22 @@
+L’univers du Jeu de la Vie est une grille orthogonale infinie bidimensionnelle de
+cellules carrées, chacune étant dans l’un des deux états possibles: vivante ou morte
+(ou peuplée et non peuplée, respectivement). Chaque cellule interagit avec ses huit voisines,
+qui sont les cellules adjacentes horizontalement, verticalement ou en diagonale.
+À chaque étape dans le temps, les transitions suivantes se produisent :
+
+    Toute cellule vivante ayant moins de deux voisines vivantes meurt, comme par sous-population.
+    Toute cellule vivante ayant deux ou trois voisines vivantes survit à la génération suivante.
+    Toute cellule vivante ayant plus de trois voisines vivantes meurt, comme par surpopulation.
+    Toute cellule morte ayant exactement trois voisines vivantes devient une cellule vivante, comme par reproduction.
+
+Ces règles, qui comparent le comportement de l’automate à la vie réelle, peuvent être condensées ainsi :
+
+    Toute cellule vivante ayant deux ou trois voisines vivantes survit.
+    Toute cellule morte ayant trois voisines vivantes devient une cellule vivante.
+    Toutes les autres cellules vivantes meurent à la génération suivante. De même, toutes les autres cellules mortes restent mortes.
+
+Le motif initial constitue la graine du système. La première génération est créée en appliquant
+simultanément les règles ci-dessus à chaque cellule de la graine, vivante ou morte;
+naissances et morts se produisent simultanément, et le moment discret où cela se produit est parfois appelé un "tick".
+Chaque génération est une fonction pure de la précédente. Les règles continuent d’être appliquées de manière répétée pour créer
+les générations suivantes.
