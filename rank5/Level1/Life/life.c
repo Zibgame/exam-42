@@ -6,7 +6,7 @@
 /*   By: exam <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/05 14:31:27 by exam              #+#    #+#             */
-/*   Updated: 2026/08/16 23:10:30 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/09/04 01:12:21 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,12 @@ char *get_stdin()
     {
         total_byte += byte;
     }
-    buf[total_byte - 1] = '\0';
+    if (byte < 0)
+        return (free(buf), NULL);
+    if (total_byte > 0 &&  buf[total_byte - 1] == '\n')
+        buf[total_byte - 1] = '\0';
+    else
+        buf[total_byte] = '\0';
     return (buf);
 }
 
