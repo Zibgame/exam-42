@@ -1,0 +1,63 @@
+Assignment name              : bsq
+Expected files               : *.c *.h
+Allowed functions and globals: malloc, calloc, realloc, free, fopen, fclose,
+getline, fscanf, fputs, fprintf, printf, stdout, stdin
+--------------------------------------------------------------------------------
+
+Le but de ce programme est de trouver le plus grand carré sur une carte, en évitant les obstacles.
+Un fichier contenant la carte sera fourni. Il sera passé en argument à votre programme.
+La première ligne de la carte contient des informations permettant de lire la carte :
+ - Le nombre de lignes sur la carte;
+ - Le caractère représentant les cases "vides";
+ - Le caractère représentant les "obstacles";
+ - Le caractère représentant les cases "pleines".
+La carte initiale est constituée de caractères '"vides"' et '"obstacles"' sur chaque ligne.
+Le but du programme est de remplacer certains caractères '"vides"' par des caractères
+'"pleins"' afin de représenter le plus grand carré possible.
+La carte est ensuite mise à jour et affichée.
+
+S’il existe plusieurs solutions, il faut choisir de représenter le carré le plus proche du
+haut de la carte, puis celui le plus à gauche.
+
+Votre programme recevra une seule carte en argument.
+Si aucun argument n’est passé, votre programme doit pouvoir lire depuis l’entrée standard.
+
+Définition d’une carte valide :
+ - Toutes les lignes de la carte doivent avoir la même longueur.
+ - Il doit y avoir au moins une ligne contenant au moins une case.
+ - Chaque fin de ligne doit se terminer par un saut de ligne.
+ - Les caractères de la carte ne peuvent être que ceux définis dans la première ligne.
+ - La carte est invalide s’il manque un caractère sur la première ligne, si deux caractères
+   (vide, plein, obstacle) sont identiques, ou s’il y a des caractères
+   en trop sur la première ligne.
+ - Les caractères peuvent être n’importe quel caractère imprimable, même
+   des chiffres (mais peut-être pas partout).
+ - En cas de carte invalide, votre programme doit afficher "Error: invalid map" sur la sortie standard,
+   suivi d’un saut de ligne.
+
+En cas d’autres erreurs, votre programme affichera "Error: " suivi d’un message explicite.
+
+
+Example:
+%> cat example_file
+9.ox
+...........................
+....o......................
+............o..............
+...........................
+....o......................
+...............o...........
+...........................
+......o..............o.....
+..o.......o................
+%> ./bsq example_file
+.....xxxxxxx...............
+....oxxxxxxx...............
+.....xxxxxxxo..............
+.....xxxxxxx...............
+....oxxxxxxx...............
+.....xxxxxxx...o...........
+.....xxxxxxx...............
+......o..............o.....
+..o.......o................
+%>

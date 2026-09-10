@@ -6,7 +6,7 @@
 /*   By: zcadinot <zcadinot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/18 16:47:49 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/09/10 15:13:00 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/09/10 15:04:17 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ char *ft_substr(char *src, int start, int len)
         }
         i++;
     }
-    str[i] = '\0';
+    str[i + 1] = 0;
     return (str);
 }
 
@@ -205,12 +205,9 @@ int print_res(t_sqr *sqr, t_map *map, t_elt *elements)
     while (h < map->height)
     {
         w = 0;
-        while (w < map->width - 1)
+        while (h < map->width)
         {
-            if (h <= sqr->y
-                    && h >= sqr->y - sqr->height + 1
-                    && w <= sqr->x
-                    && w >= sqr->x - sqr->width + 1)
+            if ((h <= sqr->y && h >= sqr->y - sqr->height) && (w <= sqr->x && w >= sqr->x - sqr->width))
                 fprintf(stdout, "%c", elements->full);
             else
                 fprintf(stdout, "%c", map->grid[h][w]);
@@ -300,7 +297,6 @@ int do_bsq(FILE *file)
     {
         return (1);
     }
-    print_res(&sqr, &map, &elements);
     fclose(file);
     free_map(&map);
     return (1);
