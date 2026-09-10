@@ -6,7 +6,7 @@
 /*   By: zcadinot <zcadinot@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/18 16:47:49 by zcadinot          #+#    #+#             */
-/*   Updated: 2026/09/10 15:13:00 by zcadinot         ###   ########.fr       */
+/*   Updated: 2026/09/10 16:13:25 by zcadinot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,22 +43,34 @@ int ft_isdigit(char c)
     return (c >= 48 && c <= 57);
 }
 
+char *ft_strchr(char *str, char c)
+{
+    int i;
+
+    i = 0;
+    while (str[i])
+    {
+        if (str[i] == c)
+            return (&str[i]);
+        i++;
+    }
+    if (c == '\0')
+        return (&str[i]);
+    return (NULL);
+}
+
 char *ft_substr(char *src, int start, int len)
 {
-    char *str = malloc((sizeof(char) * len)  + 1);
+    char    *str;
+    int     i;
+
+    str = malloc(sizeof(char) * (len + 1));
     if (!str)
-    {
-        return (0);
-    }
-    int i = 0;
-    int j = 0;
+        return (NULL);
+    i = 0;
     while (i < len)
     {
-        if (i >= j && j < len)
-        {
-            str[j] = src[i];
-            j++;
-        }
+        str[i] = src[start + i];
         i++;
     }
     str[i] = '\0';
@@ -82,30 +94,42 @@ int load_elt(t_elt *elements, FILE *file)
     char *line = NULL;
     size_t n = 0;
     int len = 0;
+    int i = 0;
     if ((len = getline(&line, &n, file)) < 0)
     {
-        fprintf(stderr, "Error: {getline} Fail in [load_elt]\n");
+        /* fprintf(stderr, "Error: {getline} Fail in [load_elt]\n"); */
+        free(line);
         return (0);
     }
-    if (len != 5)
+    if (len < 5 || line[len - 1] != '\n')
     {
-        fprintf(stderr, "Error: number of elt invalid\n");
+        /* fprintf(stderr, "Error: number of elt invalid\n"); */
+        free(line);
         return(0);
     }
-    if (!ft_isdigit(line[0]))
+    elements->row = 0;
+    while (i < len - 4)
     {
-        fprintf(stderr, "Error: elt->row in file not a digits\n");
-        return(0);
+        if (!ft_isdigit(line[i]))
+        {
+            /* fprintf(stderr, "Error: elt->row in file not a digits\n"); */
+            free(line);
+            return(0);
+        }
+        elements->row = elements->row * 10 + (line[i] - '0');
+        i++;
     }
-    if (line[1] == line[2] || line[1] == line[3] || line[2] == line[3])
+    if (elements->row <= 0 || line[len - 4] == line[len - 3]
+        || line[len - 4] == line[len - 2]
+        || line[len - 3] == line[len - 2])
     {
-        fprintf(stderr, "Error: Duplicate char in elt\n");
+        /* fprintf(stderr, "Error: Duplicate char in elt\n"); */
+        free(line);
         return (0);
     }
-    elements->row = line[0] - '0';
-    elements->empty = line[1];
-    elements->obstacle = line[2];
-    elements->full = line[3];
+    elements->empty = line[len - 4];
+    elements->obstacle = line[len - 3];
+    elements->full = line[len - 2];
     free(line);
     return (1);
 }
@@ -113,11 +137,17 @@ int load_elt(t_elt *elements, FILE *file)
 int load_map(t_map *map, t_elt *elements, FILE *file)
 {
     map->height = elements->row;
-    map->grid = malloc((sizeof(char *) * map->height));
+    map->grid = calloc(map->height, sizeof(char *));
     char *line = NULL;
+    char chars[3];
     size_t n = 0;
     int len = 0;
     int i = 0;
+    int j = 0;
+
+    chars[0] = elements->empty;
+    chars[1] = elements->obstacle;
+    chars[2] = '\0';
     if (!map->grid)
     {
         return (0);
@@ -127,7 +157,7 @@ int load_map(t_map *map, t_elt *elements, FILE *file)
         if ((len = getline(&line, &n, file)) < 0)
         {
             free_map(map);
-            fprintf(stderr, "Error: {getline} Fail in [load_map]\n");
+            /* fprintf(stderr, "Error: {getline} Fail in [load_map]\n"); */
             return (0);
         }
         if (i == 0)
@@ -136,19 +166,39 @@ int load_map(t_map *map, t_elt *elements, FILE *file)
         }
         if (map->width != len)
         {
+            free(line);
             free_map(map);
-            fprintf(stderr, "Error: {getline} all the line are not the same len\n");
+            /* fprintf(stderr, "Error: {getline} all the line are not the same len\n"); */
             return (0);
         }
         if (line[len - 1] != '\n')
         {
+            free(line);
             free_map(map);
-            fprintf(stderr, "Error: {getline} line dont finish with /n\n");
+            /* fprintf(stderr, "Error: {getline} line dont finish with /n\n"); */
             return (0);
+        }
+        if (len <= 1)
+        {
+            free(line);
+            free_map(map);
+            return (0);
+        }
+        j = 0;
+        while (j < len - 1)
+        {
+            if (!ft_strchr(chars, line[j]))
+            {
+                free(line);
+                free_map(map);
+                return (0);
+            }
+            j++;
         }
         map->grid[i] = ft_substr(line, 0, len);
         if (!map->grid[i])
         {
+            free(line);
             free_map(map);
             return (0);
         }
@@ -235,6 +285,8 @@ int find_sqr(t_sqr *sqr, t_map *map, t_elt *elements)
     sqr->width = 0;
     sqr->height = 0;
     int **tab = create_int_tab(map->height , map->width - 1);
+    if (!tab)
+        return (0);
     while (h < map->height)
     {
         w = 0;
@@ -278,6 +330,13 @@ int find_sqr(t_sqr *sqr, t_map *map, t_elt *elements)
         }
         h++;
     }
+    h = 0;
+    while (h < map->height)
+    {
+        free(tab[h]);
+        h++;
+    }
+    free(tab);
     return (1);
 }
 
@@ -286,18 +345,28 @@ int do_bsq(FILE *file)
     t_elt elements;
     t_map map;
     t_sqr sqr;
+    map.grid = NULL;
+    map.height = 0;
+    map.width = 0;
     if (!load_elt(&elements, file))
     {
+        fputs("Error: invalid map\n", stdout);
+        fclose(file);
         return (0);
     }
-    print_elt(&elements);
+    /* print_elt(&elements); */
     if (!load_map(&map, &elements, file))
     {
+        fputs("Error: invalid map\n", stdout);
+        fclose(file);
         return (0);
     }
-    print_map(&map);
+    /* print_map(&map); */
     if (!find_sqr(&sqr ,&map, &elements))
     {
+        fputs("Error: allocation failed\n", stdout);
+        fclose(file);
+        free_map(&map);
         return (1);
     }
     print_res(&sqr, &map, &elements);
@@ -311,7 +380,7 @@ int do_bsq_file(char *path)
     FILE *file;
     if ((file = fopen(path, "r")) == NULL)
     {
-        fprintf(stderr, "Error: {fopen} Fail in [do_bsq_file]\n");
+        /* fprintf(stderr, "Error: {fopen} Fail in [do_bsq_file]\n"); */
         return (0);
     }
     if (!do_bsq(file))
@@ -325,7 +394,7 @@ int main(int argc, char **argv)
 {
     if (argc > 2)
     {
-        fprintf(stderr, "Error: Wrong Argc\n");
+        /* fprintf(stderr, "Error: Wrong Argc\n"); */
         return (0);
     }
     if (argc == 2)
